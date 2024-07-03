@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     ffprobeGetLength << "ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=noprint_wrappers=1:nokey=1 \""
     << argv[1] << "\"";
 
-    int videoLengthSeconds = stoi(exec(ffprobeGetLength.str().c_str()));
+    int videoLengthSeconds = stoi(exec(ffprobeGetLength.str().c_str()))+1;
     // std::cout << videoLengthSeconds;
     
     float newBitrate = 2e8/videoLengthSeconds;
