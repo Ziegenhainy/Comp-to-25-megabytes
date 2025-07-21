@@ -26,15 +26,19 @@ int main(int argc, char *argv[]) {
     int videoLengthSeconds = stoi(exec(ffprobeGetLength.str().c_str()))+1;
     // std::cout << videoLengthSeconds;
     
-    float newBitrate = 2e8/videoLengthSeconds;
-
+    float newBitrate = (8e7/videoLengthSeconds - 128.000) * 0.95;
+    if (newBitrate < 0) {
+        std::cout << "Video cannot be Compressed! It's too long and I am lazy.";
+        return 1;
+    }
     
     size_t lastIndex = fileName.find_last_of(".");
     std::string fileNameRaw = fileName.substr(0, lastIndex);
     std::string fileNameExt = fileName.substr(lastIndex);
 
     std::stringstream ffmpegCommand;
-    ffmpegCommand << "ffmpeg -i \"" << argv[1] << "\" -b:v " << newBitrate 
+    ffmpegCommand << "ffmpeg -i \"" << argv[1] << "\" -b:v " << newBitrate
+    << " -maxrate " << newBitrate << " -b:a 128k -bufsize " << newBitrate/2 
     << " \"" << fileNameRaw << "_comp" << fileNameExt << "\"";
 
     system(ffmpegCommand.str().c_str());
